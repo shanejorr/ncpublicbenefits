@@ -9,9 +9,19 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Imports:
+    dplyr,
+    glue,
+    httr2,
+    lubridate,
+    purrr,
+    tibble,
+    tidyr,
+    usincometaxes
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    highcharter
 VignetteBuilder: knitr
 URL: https://github.com/shanejorr/ncpublicbenefits
 BugReports: https://github.com/shanejorr/ncpublicbenefits/issues
