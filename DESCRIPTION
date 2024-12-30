@@ -13,3 +13,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/shanejorr/ncpublicbenefits
+BugReports: https://github.com/shanejorr/ncpublicbenefits/issues
