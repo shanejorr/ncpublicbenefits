@@ -26,7 +26,7 @@ plt_total_income <- function(benefits_table, unique_composition, unique_benefits
       )
     )
 
-  highcharter::hchart(income_plus_benefits, "line", highcharter::hcaes(x = monthly_income, y = income, group = pay_type)) |>
+  highcharter::hchart(income_plus_benefits, "line", highcharter::hcaes(x = .data$monthly_income, y = .data$income, group = .data$pay_type)) |>
     # Add a title and axis titles
     highcharter::hc_title(text = "Total take home income by wage") |>
     highcharter::hc_subtitle(text = glue::glue("Family type: ")) |>

@@ -37,10 +37,10 @@ fns_snap <- function(base_table) {
     rent = 600 + (200*size)
   ) |>
     # make the shelter deduction the standard utility deduction and rent
-    dplyr::mutate(shelter = sua + rent) |>
-    dplyr::select(size, shelter)
+    dplyr::mutate(shelter = .data$sua + .data$rent) |>
+    dplyr::select(.data$size, .data$shelter)
 
-  # merge utilitiy allowances to snap dataset
+  # merge utility allowances to snap dataset
   snap <- snap |>
     dplyr::left_join(shelter_costs, by="size")
 
@@ -48,7 +48,7 @@ fns_snap <- function(base_table) {
   snap <- snap |>
     dplyr::mutate(
       std_ded = dplyr::case_match(
-        size,
+        .data$size,
         # standard deductions based on family size
         # https://fns-prod.azureedge.us/sites/default/files/media/file/FY19-Maximum-Allotments-Deductions.pdf
         1 ~ 164,
@@ -67,9 +67,9 @@ fns_snap <- function(base_table) {
     dplyr::mutate(
       # 20 percent of earned income is deducted,
       # so add column showing this amount
-      ded_20 = monthly_income * .2,
+      ded_20 = .data$monthly_income * .2,
       # for dependent care deduction, assume $200 per child per month
-      dep_care = children * 400
+      dep_care = .data$children * 400
     )
 
   # calculate SNAP amounts
@@ -77,18 +77,18 @@ fns_snap <- function(base_table) {
     # calculate net income:
     # subtract standard deduction, earnings deducting, and child care deduction
     dplyr::mutate(
-      net_income = monthly_income - std_ded - dep_care - ded_20,
+      net_income = .data$monthly_income - .data$std_ded - .data$dep_care - .data$ded_20,
       # deduct shelter expenses that exceed half of net income
-      shelter_ded = shelter - (net_income/2),
+      shelter_ded = .data$shelter - (.data$net_income / 2),
       # shelter deduction is maxed out at 552
       # https://fns-prod.azureedge.us/sites/default/files/media/file/FY19-Maximum-Allotments-Deductions.pdf
-      shelter_ded = ifelse(shelter_ded > 552, 552, shelter_ded),
+      shelter_ded = ifelse(.data$shelter_ded > 552, 552, .data$shelter_ded),
       # subtract shelter deduction from net income
-      net_income = net_income - shelter_ded,
+      net_income = .data$net_income - .data$shelter_ded,
       # family is expected to contribute 30% of income to food
-      family_contribution = net_income * .3,
+      family_contribution = .data$net_income * .3,
       # convert this amount to 0 if it is negative
-      family_contribution = ifelse(family_contribution < 0, 0, family_contribution)
+      family_contribution = ifelse(.data$family_contribution < 0, 0, .data$family_contribution)
     )
 
   # maximum income is set at 200% of federal poverty guideline
@@ -97,19 +97,19 @@ fns_snap <- function(base_table) {
   family_sizes <- unique(base_table$size)
 
   fpg <- get_poverty_guidelines(current_year, 'us', family_sizes, by_month = TRUE) |>
-    dplyr::select(household_size, poverty_threshold)
+    dplyr::select(.data$household_size, .data$poverty_threshold)
 
   # convert guideline amounts to 200%
   snap_income_limit <- fpg |>
-    dplyr::mutate(snap_income_limit = round(poverty_threshold * 2, 0)) |>
-    dplyr::select(size = household_size, snap_income_limit)
+    dplyr::mutate(snap_income_limit = round(.data$poverty_threshold * 2, 0)) |>
+    dplyr::select(size = .data$household_size, .data$snap_income_limit)
 
   # add benefit and income limit amounts to dataset
   # https://fns-prod.azureedge.us/sites/default/files/media/file/FY19-Maximum-Allotments-Deductions.pdf
   snap <- snap |>
-    dplyr::arrange(monthly_income, adults, children) |>
+    dplyr::arrange(.data$monthly_income, .data$adults, .data$children) |>
     dplyr::mutate(max_allotment = dplyr::case_match(
-      size,
+      .data$size,
       1 ~ 192,
       2 ~ 353,
       3 ~ 505,
@@ -125,14 +125,14 @@ fns_snap <- function(base_table) {
     dplyr::left_join(snap_income_limit, by = "size", relationship = "many-to-one") |>
     # find benefit amount by subtracting family contribution from maximum benefit
     dplyr::mutate(
-      snap_amount = max_allotment - family_contribution,
+      snap_amount = .data$max_allotment - .data$family_contribution,
       # for families over 200% of federal poverty line, make benefit 0
-      payment = ifelse(monthly_income > snap_income_limit, 0, snap_amount),
+      payment = ifelse(.data$monthly_income > .data$snap_income_limit, 0, .data$snap_amount),
       # families with negative values for payment get zero in benefits
-      payment = ifelse(payment < 0, 0, payment),
+      payment = ifelse(.data$payment < 0, 0, .data$payment),
       # one and two person families must have at least $15 in benefits
-      payment = ifelse((size %in% c(1,2) & payment < 15), 0, payment)) |>
-    dplyr::select(composition, adults, children, monthly_income, payment, benefit)
+      payment = ifelse((.data$size %in% c(1,2) & .data$payment < 15), 0, .data$payment)) |>
+    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment, .data$benefit)
 
   return(snap)
 

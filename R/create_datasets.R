@@ -25,13 +25,13 @@ total_take_home_income <- function(benefits_table, family_composition, unique_be
   # only keep the needed family compositions and benefits
   filtered_summed_benefits <- benefits_table |>
     dplyr::filter(
-      composition %in% !!family_composition,
-      benefit %in% !!unique_benefits
+      .data$composition %in% !!family_composition,
+      .data$benefit %in% !!unique_benefits
     ) |>
     # calculate total benefit amounts for each family composition and income
     dplyr::summarize(
-      total_benefit = sum(payment),
-      .by = c(composition, adults, children, monthly_income)
+      total_benefit = sum(.data$payment),
+      .by = c(.data$composition, .data$adults, .data$children, .data$monthly_income)
     )
 
   # add taxes
@@ -40,10 +40,10 @@ total_take_home_income <- function(benefits_table, family_composition, unique_be
   filtered_summed_benefits |>
     dplyr::left_join(tax_values, by = c("monthly_income", "adults", "children"), relationship = 'one-to-one') |>
     dplyr::mutate(
-      income_minus_taxes = monthly_income - total_taxes,
-      take_home = monthly_income + total_benefit - total_taxes
+      income_minus_taxes = .data$monthly_income - .data$total_taxes,
+      take_home = .data$monthly_income + .data$total_benefit - .data$total_taxes
     ) |>
-    dplyr::select(-adults, - children, -taxsimid)
+    dplyr::select(-.data$adults, -.data$children, -.data$taxsimid)
 
 }
 
@@ -56,36 +56,36 @@ total_take_home_income <- function(benefits_table, family_composition, unique_be
 #' @export
 calculate_taxes <- function(family_types) {
 
-  distinct_families <- family_types |>
-    dplyr::distinct(monthly_income, adults, children) |>
+distinct_families <- family_types |>
+    dplyr::distinct(.data$monthly_income, .data$adults, .data$children) |>
     dplyr::mutate(taxsimid = dplyr::row_number())
 
   tax_data <- distinct_families |>
-    dplyr::mutate(yearly_income = monthly_income * 12) |>
-    dplyr::distinct(yearly_income, adults, children) |>
-    dplyr::rename(depx = children) |>
+    dplyr::mutate(yearly_income = .data$monthly_income * 12) |>
+    dplyr::distinct(.data$yearly_income, .data$adults, .data$children) |>
+    dplyr::rename(depx = .data$children) |>
     dplyr::mutate(
       taxsimid = dplyr::row_number(),
       year = 2019,
-      mstat = dplyr::if_else(adults == 1, 1, 2),
+      mstat = dplyr::if_else(.data$adults == 1, 1, 2),
       state = "NC",
       page = 30,
-      sage = dplyr::if_else(adults == 1, 0, 30),
-      age1 = dplyr::if_else(depx >= 1, 5, 0),
-      age2 = dplyr::if_else(depx >= 2, 10, 0),
-      age3 = dplyr::if_else(depx >= 3, 15, 0),
-      pwages = dplyr::if_else(adults == 1, yearly_income, yearly_income / 2),
-      swages = dplyr::if_else(adults == 1, 0, yearly_income / 2)
+      sage = dplyr::if_else(.data$adults == 1, 0, 30),
+      age1 = dplyr::if_else(.data$depx >= 1, 5, 0),
+      age2 = dplyr::if_else(.data$depx >= 2, 10, 0),
+      age3 = dplyr::if_else(.data$depx >= 3, 15, 0),
+      pwages = dplyr::if_else(.data$adults == 1, .data$yearly_income, .data$yearly_income / 2),
+      swages = dplyr::if_else(.data$adults == 1, 0, .data$yearly_income / 2)
     ) |>
-    dplyr::select(taxsimid, depx, year:swages)
+    dplyr::select(.data$taxsimid, .data$depx, .data$year:.data$swages)
 
   tax_amounts <- usincometaxes::taxsim_calculate_taxes(
     .data = tax_data,
     marginal_tax_rates = 'Wages',
     return_all_information = FALSE
   ) |>
-    dplyr::mutate(total_taxes = (fiitax + siitax + (tfica / 2)) / 12) |>
-    dplyr::select(taxsimid, total_taxes)
+    dplyr::mutate(total_taxes = (.data$fiitax + .data$siitax + (.data$tfica / 2)) / 12) |>
+    dplyr::select(.data$taxsimid, .data$total_taxes)
 
   if (nrow(tax_amounts) != nrow(distinct_families)) stop("Problems calculating taxes", call. = FALSE)
   if (!all(tax_amounts$taxsimid == distinct_families$taxsimid)) stop("Problems calculating taxes", call. = FALSE)

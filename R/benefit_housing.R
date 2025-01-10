@@ -61,12 +61,12 @@ housing_voucher <- function(base_table) {
   # this is the max rent that can be reimbursed
   # https://www.huduser.gov/portal/datasets/fmr.html#2019_data
   fmr <- base_table |>
-    dplyr::select(adults, children) |>
+    dplyr::select(.data$adults, .data$children) |>
     dplyr::distinct() |>
     dplyr::mutate(fmr = c(583, 729, 729, 985, 583, 729, 729, 985),
     # we will assume people's rent amount is 80% of fmr
-          rent = round(fmr * .8 , 0)) |>
-    dplyr::select(-fmr)
+          rent = round(.data$fmr * .8 , 0)) |>
+    dplyr::select(-.data$fmr)
 
   # add fmr to data set
   housing <- base_table |>
@@ -84,13 +84,13 @@ housing_voucher <- function(base_table) {
   housing <- housing |>
     # benefit amount (payment) is rent minus ttp
     dplyr::mutate(
-      payment = rent - tenant_payment,
+      payment = .data$rent - .data$tenant_payment,
       # if payment is negative, make it 0
-      payment = ifelse(payment < 0, 0, payment),
-      payment = round(payment, 2),
+      payment = ifelse(.data$payment < 0, 0, .data$payment),
+      payment = round(.data$payment, 2),
       benefit = "Housing Choice Voucher"
     ) |>
-    dplyr::select(composition, adults, children, monthly_income, payment, benefit)
+    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment, .data$benefit)
 
   return(housing)
 

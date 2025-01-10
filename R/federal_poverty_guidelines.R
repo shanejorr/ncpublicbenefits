@@ -14,8 +14,10 @@
 #' @param by_month A logical value indicating whether to return the poverty threshold as a monthly value. Default is FALSE.
 #' @return A tibble with columns 'year', 'state', 'household_size', and 'poverty_threshold'.
 #' @examples
+#' \dontrun{
 #' df <- get_poverty_guidelines(2023, "us", 4)
 #' print(df)
+#' }
 #' @export
 get_single_poverty_guidelines <- function(year, state, household_size, by_month = FALSE) {
 
@@ -90,7 +92,7 @@ get_poverty_guidelines <- function(years, states, household_sizes, by_month = FA
   # each list element contains one combination of parameters
   params <- tidyr::expand_grid(year = years, state = states, household_size = household_sizes) |>
     dplyr::mutate(.id = dplyr::row_number()) |>
-    dplyr::group_by(.id) |>
+    dplyr::group_by(.data$.id) |>
     dplyr::group_split() |>
     purrr::map(as.list)
 

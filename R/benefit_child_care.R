@@ -13,7 +13,7 @@
 #' @export
 child_care <- function(base_table) {
 
-  message("Calculating child care benefits")
+   message("Calculating child care benefits")
 
   current_year <- 2019
 
@@ -39,9 +39,9 @@ child_care <- function(base_table) {
     dplyr::mutate(
       # recipients have to pay 10% of income
       # so subtract this amount from
-      payment = round(payment - (monthly_income * .10), 2),
+      payment = round(.data$payment - (.data$monthly_income * .10), 2),
       # if payment is negative, convert to 0
-      payment = dplyr::if_else(payment < 0, 0, payment)
+      payment = dplyr::if_else(.data$payment < 0, 0, .data$payment)
     )
 
   # can receive benefits up to 200% fpg
@@ -52,23 +52,23 @@ child_care <- function(base_table) {
   family_sizes <- unique(care$size)
 
   fpg <- get_poverty_guidelines(current_year, 'us', family_sizes, by_month = TRUE) |>
-    dplyr::select(household_size, poverty_threshold)
+    dplyr::select(.data$household_size, .data$poverty_threshold)
 
   fpg <- fpg |>
     # convert guideline amounts to 200% and calculate by month
-    dplyr::mutate(income_limit = round(poverty_threshold * 2, 0)) |>
-    dplyr::rename(size = household_size) |>
-    dplyr::select(size, income_limit)
+    dplyr::mutate(income_limit = round(.data$poverty_threshold * 2, 0)) |>
+    dplyr::rename(size = .data$household_size) |>
+    dplyr::select(.data$size, .data$income_limit)
 
   # add 200% fpg to child care data set
   care <- care |>
     dplyr::left_join(fpg, by = "size") |>
     # set payment to 0 if income is greater than 200% of poverty guideline
     dplyr::mutate(
-      payment = dplyr::if_else(monthly_income > income_limit, 0, payment),
+      payment = dplyr::if_else(.data$monthly_income > .data$income_limit, 0, .data$payment),
       benefit = "NC Child Care Subsidy"
     ) |>
-    dplyr::select(composition, adults, children, monthly_income, payment, benefit)
+    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment, .data$benefit)
 
   return(care)
 

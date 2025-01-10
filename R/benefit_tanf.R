@@ -34,19 +34,19 @@ tanf <- function(base_table) {
   tanf <- tanf |>
     dplyr::mutate(
       # can deduct 27.5% of gross earned income
-      tanf_monthly_income = monthly_income - (monthly_income * .275),
+      tanf_monthly_income = .data$monthly_income - (.data$monthly_income * .275),
       # calculate payment as 50% difference between income and need std
-      payment = round((need_std - tanf_monthly_income)*.5, 0),
+      payment = round((.data$need_std - .data$tanf_monthly_income) * .5, 0),
       # payment must be $25 or more to receive benefits
-      payment = ifelse(payment >= 25, payment, 0),
+      payment = ifelse(.data$payment >= 25, .data$payment, 0),
       # cannot receive benefits if you don't have children
-      payment = ifelse(children == 0, 0, payment)
+      payment = ifelse(.data$children == 0, 0, .data$payment)
     )
 
   # create final data set
   tanf <- tanf |>
-    dplyr::arrange(monthly_income, adults, children) |>
-    dplyr::select(composition, adults, children, monthly_income, payment) |>
+    dplyr::arrange(.data$monthly_income, .data$adults, .data$children) |>
+    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment) |>
     dplyr::mutate(benefit = 'Work First (TANF)')
 
   return(tanf)
