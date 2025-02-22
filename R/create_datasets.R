@@ -5,7 +5,7 @@
 ##############################################################################
 
 #' @title Calculate Total Take-Home Income
-#' @description Computes the total take-home income for a household after considering all applicable taxes and benefits. 
+#' @description Computes the total take-home income for a household after considering all applicable taxes and benefits.
 #' The calculation accounts for gross income, tax liabilities, and received benefits.
 #' @param benefits_table A tibble containing calculated benefits data for the household.
 #' @param family_composition A character vector of family compositions to include in the analysis.
@@ -48,7 +48,7 @@ total_take_home_income <- function(benefits_table, family_composition, unique_be
 }
 
 #' @title Calculate Taxes
-#' @description Computes federal and state taxes for a household based on their income and family composition. 
+#' @description Computes federal and state taxes for a household based on their income and family composition.
 #' The calculation includes adjustments for deductions, credits, and other tax-related considerations.
 #' @param family_types A tibble containing family compositions, sizes, and monthly incomes.
 #'    Use `create_benefits_table()` to calculate family types
@@ -96,7 +96,7 @@ distinct_families <- family_types |>
 }
 
 #' @title Create Benefits Table
-#' @description Generates a comprehensive benefits table by combining multiple calculated benefits (e.g., TANF, SNAP, Medicaid) for a household. 
+#' @description Generates a comprehensive benefits table by combining multiple calculated benefits (e.g., TANF, SNAP, Medicaid) for a household.
 #' The table includes details on household income, family composition, and total benefits received.
 #' @param income_increment Numeric. The increment in monthly income for each row in the base table. Default is 10.
 #' @return A tibble that aggregates all benefits for each household, with detailed breakdowns by benefit type.

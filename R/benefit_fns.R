@@ -11,7 +11,7 @@
 #############################################################################
 
 #' @title Calculate FNS (Food and Nutrition Services) Benefits
-#' @description Computes the Food and Nutrition Services (FNS) benefits, also known as SNAP federally, for households in North Carolina for the year 2019. 
+#' @description Computes the Food and Nutrition Services (FNS) benefits, also known as SNAP federally, for households in North Carolina for the year 2019.
 #' The calculation incorporates income, household size, shelter costs, and deductions based on federal guidelines.
 #' @param base_table A tibble containing the base household data, including family composition, size, and monthly income.
 #'    The table should be generated using the `base_composition` function.
@@ -34,7 +34,7 @@ fns_snap <- function(base_table) {
     bua = c(246, 270, 297, 324, 353),
     tua = 38,
     # rent starts at $600 and each additional person adds $200
-    rent = 600 + (200*size)
+    rent = 600 + (200*.data$size)
   ) |>
     # make the shelter deduction the standard utility deduction and rent
     dplyr::mutate(shelter = .data$sua + .data$rent) |>

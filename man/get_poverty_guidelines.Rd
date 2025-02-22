@@ -9,11 +9,11 @@ get_poverty_guidelines(years, states, household_sizes, by_month = FALSE)
 \arguments{
 \item{years}{A vector of integers representing the years. Valid years are between 1983 and 2024.}
 
+\item{states}{A character string representing the state. Valid values are 'us' (contiguous U.S. and D.C.), 'hi' (Hawaii), and 'ak' (Alaska).}
+
 \item{household_sizes}{A vector of integers representing household sizes. Valid values are between 1 and 8.}
 
 \item{by_month}{A logical value indicating whether to return the poverty threshold as a monthly value. Default is FALSE.}
-
-\item{state}{A character string representing the state. Valid values are 'us' (contiguous U.S. and D.C.), 'hi' (Hawaii), and 'ak' (Alaska).}
 }
 \value{
 A tibble with columns 'year', 'state', 'household_size', and 'poverty_threshold' for each combination of year and household size.
@@ -22,10 +22,4 @@ A tibble with columns 'year', 'state', 'household_size', and 'poverty_threshold'
 Fetches federal poverty guidelines for multiple years and/or household sizes from the HHS API.
 The poverty guideline is the same for all states except Hawaii and Alaska.
 Guideline values are per year.
-}
-\examples{
-years <- c(2022, 2023)
-household_sizes <- c(1, 4, 6)
-df <- get_multiple_poverty_guidelines(years, "us", household_sizes)
-print(df)
 }

@@ -22,9 +22,3 @@ A tibble with columns 'year', 'state', 'household_size', and 'poverty_threshold'
 Fetches the federal poverty guideline for a given year, state, and household size from the HHS API.
 The poverty guideline is the same for all states except Hawaii and Alaska.
 }
-\examples{
-\dontrun{
-df <- get_poverty_guidelines(2023, "us", 4)
-print(df)
-}
-}

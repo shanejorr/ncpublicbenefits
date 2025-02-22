@@ -1,2 +1,4 @@
 library(testthat)
-test_dir("tests/testthat")
+library(ncpublicbenefits)
+
+test_check("usincometaxes")
