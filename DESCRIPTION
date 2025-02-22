@@ -21,7 +21,8 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    highcharter
+    highcharter,
+    withr
 VignetteBuilder: knitr
 URL: https://github.com/shanejorr/ncpublicbenefits
 BugReports: https://github.com/shanejorr/ncpublicbenefits/issues

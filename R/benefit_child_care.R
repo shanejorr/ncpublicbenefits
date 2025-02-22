@@ -52,13 +52,13 @@ child_care <- function(base_table) {
   family_sizes <- unique(care$size)
 
   fpg <- get_poverty_guidelines(current_year, 'us', family_sizes, by_month = TRUE) |>
-    dplyr::select(.data$household_size, .data$poverty_threshold)
+    dplyr::select(dplyr::all_of(c('household_size', 'poverty_threshold')))
 
   fpg <- fpg |>
     # convert guideline amounts to 200% and calculate by month
     dplyr::mutate(income_limit = round(.data$poverty_threshold * 2, 0)) |>
     dplyr::rename(size = .data$household_size) |>
-    dplyr::select(.data$size, .data$income_limit)
+    dplyr::select(dplyr::all_of(c('size', 'income_limit')))
 
   # add 200% fpg to child care data set
   care <- care |>
@@ -68,8 +68,8 @@ child_care <- function(base_table) {
       payment = dplyr::if_else(.data$monthly_income > .data$income_limit, 0, .data$payment),
       benefit = "NC Child Care Subsidy"
     ) |>
-    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment, .data$benefit)
-
+  dplyr::select(dplyr::all_of(c("composition", "adults", "children", "monthly_income", "payment", "benefit")))
+  
   return(care)
 
 }

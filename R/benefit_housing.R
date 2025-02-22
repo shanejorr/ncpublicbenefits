@@ -60,13 +60,22 @@ housing_voucher <- function(base_table) {
   # create data frame of fair market rent values in 2019 based on family size
   # this is the max rent that can be reimbursed
   # https://www.huduser.gov/portal/datasets/fmr.html#2019_data
-  fmr <- base_table |>
-    dplyr::select(.data$adults, .data$children) |>
-    dplyr::distinct() |>
-    dplyr::mutate(fmr = c(583, 729, 729, 985, 583, 729, 729, 985),
+  fmr <- tibble::tribble(
+  ~adults, ~children, ~fmr,
+       1,        0,  583,
+       1,        1,  729,
+       1,        2,  729,
+       1,        3,  985,
+       2,        0,  583,
+       2,        1,  729,
+       2,        2,  729,
+       2,        3,  985
+    )
+
+  fmr <- fmr |>
     # we will assume people's rent amount is 80% of fmr
-          rent = round(.data$fmr * .8 , 0)) |>
-    dplyr::select(-.data$fmr)
+    dplyr::mutate(rent = round(.data$fmr * .8 , 0)) |>
+    dplyr::select(-fmr)
 
   # add fmr to data set
   housing <- base_table |>
@@ -90,8 +99,8 @@ housing_voucher <- function(base_table) {
       payment = round(.data$payment, 2),
       benefit = "Housing Choice Voucher"
     ) |>
-    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment, .data$benefit)
-
+    dplyr::select(dplyr::all_of(c("composition", "adults", "children", "monthly_income", "payment", "benefit")))
+  
   return(housing)
 
 }

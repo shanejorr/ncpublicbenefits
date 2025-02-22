@@ -38,8 +38,8 @@ fns_snap <- function(base_table) {
   ) |>
     # make the shelter deduction the standard utility deduction and rent
     dplyr::mutate(shelter = .data$sua + .data$rent) |>
-    dplyr::select(.data$size, .data$shelter)
-
+  dplyr::select(dplyr::all_of(c("size", "shelter")))
+  
   # merge utility allowances to snap dataset
   snap <- snap |>
     dplyr::left_join(shelter_costs, by="size")
@@ -97,12 +97,12 @@ fns_snap <- function(base_table) {
   family_sizes <- unique(base_table$size)
 
   fpg <- get_poverty_guidelines(current_year, 'us', family_sizes, by_month = TRUE) |>
-    dplyr::select(.data$household_size, .data$poverty_threshold)
+    dplyr::select(dplyr::all_of(c("household_size", "poverty_threshold")))
 
   # convert guideline amounts to 200%
   snap_income_limit <- fpg |>
     dplyr::mutate(snap_income_limit = round(.data$poverty_threshold * 2, 0)) |>
-    dplyr::select(size = .data$household_size, .data$snap_income_limit)
+    dplyr::select(size = "household_size", dplyr::all_of("snap_income_limit"))
 
   # add benefit and income limit amounts to dataset
   # https://fns-prod.azureedge.us/sites/default/files/media/file/FY19-Maximum-Allotments-Deductions.pdf
@@ -132,7 +132,7 @@ fns_snap <- function(base_table) {
       payment = ifelse(.data$payment < 0, 0, .data$payment),
       # one and two person families must have at least $15 in benefits
       payment = ifelse((.data$size %in% c(1,2) & .data$payment < 15), 0, .data$payment)) |>
-    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment, .data$benefit)
+  dplyr::select(dplyr::all_of(c("composition", "adults", "children", "monthly_income", "payment", "benefit")))
 
   return(snap)
 

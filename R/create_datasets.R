@@ -77,7 +77,7 @@ distinct_families <- family_types |>
       pwages = dplyr::if_else(.data$adults == 1, .data$yearly_income, .data$yearly_income / 2),
       swages = dplyr::if_else(.data$adults == 1, 0, .data$yearly_income / 2)
     ) |>
-    dplyr::select(.data$taxsimid, .data$depx, .data$year:.data$swages)
+    dplyr::select(dplyr::all_of(c("taxsimid", "depx", "year", "mstat", "state", "page", "sage", "age1", "age2", "age3", "pwages", "swages")))
 
   tax_amounts <- usincometaxes::taxsim_calculate_taxes(
     .data = tax_data,
@@ -85,8 +85,8 @@ distinct_families <- family_types |>
     return_all_information = FALSE
   ) |>
     dplyr::mutate(total_taxes = (.data$fiitax + .data$siitax + (.data$tfica / 2)) / 12) |>
-    dplyr::select(.data$taxsimid, .data$total_taxes)
-
+  dplyr::select(dplyr::all_of(c("taxsimid", "total_taxes")))
+  
   if (nrow(tax_amounts) != nrow(distinct_families)) stop("Problems calculating taxes", call. = FALSE)
   if (!all(tax_amounts$taxsimid == distinct_families$taxsimid)) stop("Problems calculating taxes", call. = FALSE)
 

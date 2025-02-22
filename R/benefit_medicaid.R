@@ -94,7 +94,7 @@ medicaid <- function(base_table) {
   if (any(is.na(medical$payment))) stop("Not all medicaid payments defined", call. = FALSE)
 
   medical <- medical |>
-    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment, .data$benefit)
+    dplyr::select(dplyr::all_of(c("composition", "adults", "children", "monthly_income", "payment", "benefit")))
 
   return(medical)
 

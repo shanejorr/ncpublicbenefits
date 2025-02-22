@@ -46,7 +46,7 @@ tanf <- function(base_table) {
   # create final data set
   tanf <- tanf |>
     dplyr::arrange(.data$monthly_income, .data$adults, .data$children) |>
-    dplyr::select(.data$composition, .data$adults, .data$children, .data$monthly_income, .data$payment) |>
+    dplyr::select(dplyr::all_of(c("composition", "adults", "children", "monthly_income", "payment"))) |>
     dplyr::mutate(benefit = 'Work First (TANF)')
 
   return(tanf)
