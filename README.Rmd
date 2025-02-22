@@ -129,7 +129,7 @@ You can also look at how total take-home income (income plus benefits minus taxe
 
 ```{r}
 income_plus_benefits <- take_home_table |>
-    select(.data$monthly_income, .data$income_minus_taxes, .data$take_home) |>
+    select(monthly_income, income_minus_taxes, take_home) |>
     pivot_longer(cols = c('income_minus_taxes', 'take_home'), names_to = 'pay_type', values_to = 'income') |>
     mutate(
       pay_type = case_match(

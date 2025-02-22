@@ -204,7 +204,7 @@ minus taxes) changes with income.
 
 ``` r
 income_plus_benefits <- take_home_table |>
-    select(.data$monthly_income, .data$income_minus_taxes, .data$take_home) |>
+    select(monthly_income, income_minus_taxes, take_home) |>
     pivot_longer(cols = c('income_minus_taxes', 'take_home'), names_to = 'pay_type', values_to = 'income') |>
     mutate(
       pay_type = case_match(
@@ -214,21 +214,6 @@ income_plus_benefits <- take_home_table |>
       )
     ) |>
     arrange(.data$pay_type, .data$monthly_income)
-#> Warning: Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
-#> ℹ Please use `"monthly_income"` instead of `.data$monthly_income`
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
-#> Warning: Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
-#> ℹ Please use `"income_minus_taxes"` instead of `.data$income_minus_taxes`
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
-#> Warning: Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
-#> ℹ Please use `"take_home"` instead of `.data$take_home`
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
 
 ggplot(income_plus_benefits, aes(x = monthly_income, y = income, color = pay_type)) +
   geom_line() +
