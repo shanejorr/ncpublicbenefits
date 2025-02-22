@@ -7,9 +7,12 @@
 #' @title Calculate Total Take-Home Income
 #' @description Computes the total take-home income for a household after considering all applicable taxes and benefits.
 #' The calculation accounts for gross income, tax liabilities, and received benefits.
-#' @param benefits_table A tibble containing calculated benefits data for the household.
+#' @param benefits_table A tibble containing calculated benefits data for the household. 
+#'   Use `create_benefits_table()` to generate this table.
 #' @param family_composition A character vector of family compositions to include in the analysis.
+#'  Use `family_benefit_values('family')` to get a list of available family compositions.
 #' @param unique_benefits A character vector of unique benefits to include in the analysis.
+#'  Use `family_benefit_values('benefits')` to get a list of available benefits.
 #' @return A tibble with the calculated total take-home income, including detailed breakdowns of income, taxes, and benefits.
 #' @export
 total_take_home_income <- function(benefits_table, family_composition, unique_benefits) {
@@ -56,7 +59,7 @@ total_take_home_income <- function(benefits_table, family_composition, unique_be
 #' @export
 calculate_taxes <- function(family_types) {
 
-distinct_families <- family_types |>
+  distinct_families <- family_types |>
     dplyr::distinct(.data$monthly_income, .data$adults, .data$children) |>
     dplyr::mutate(taxsimid = dplyr::row_number())
 

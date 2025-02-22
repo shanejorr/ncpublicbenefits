@@ -7,11 +7,14 @@
 total_take_home_income(benefits_table, family_composition, unique_benefits)
 }
 \arguments{
-\item{benefits_table}{A tibble containing calculated benefits data for the household.}
+\item{benefits_table}{A tibble containing calculated benefits data for the household.
+Use \code{create_benefits_table()} to generate this table.}
 
-\item{family_composition}{A character vector of family compositions to include in the analysis.}
+\item{family_composition}{A character vector of family compositions to include in the analysis.
+Use \code{family_benefit_values('family')} to get a list of available family compositions.}
 
-\item{unique_benefits}{A character vector of unique benefits to include in the analysis.}
+\item{unique_benefits}{A character vector of unique benefits to include in the analysis.
+Use \code{family_benefit_values('benefits')} to get a list of available benefits.}
 }
 \value{
 A tibble with the calculated total take-home income, including detailed breakdowns of income, taxes, and benefits.
